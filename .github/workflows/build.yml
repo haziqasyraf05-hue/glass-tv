@@ -18,7 +18,15 @@ jobs:
         run: |
           echo "sdk.dir=$ANDROID_HOME" > local.properties
           chmod +x gradlew
-          ./gradlew assembleRelease --console=plain
+          for i in 1 2 3 4 5; do
+            echo "=== Percubaan $i ==="
+            if [ "$i" -ge 3 ]; then
+              sed -i 's#^distributionUrl=.*#distributionUrl=https\\://mirrors.cloud.tencent.com/gradle/gradle-8.9-bin.zip#' gradle/wrapper/gradle-wrapper.properties
+            fi
+            ./gradlew assembleRelease --console=plain && exit 0
+            sleep 20
+          done
+          exit 1
       - name: Check APK
         run: |
           ls -la launcher/app/build/outputs/apk/release/
